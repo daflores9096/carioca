@@ -112,8 +112,43 @@ carioca/
 - Reportes, usuarios, respaldo SQL
 - Impresión de notas de compra/venta
 
+## Producción (NAS / servidor)
+
+El Compose de desarrollo (`docker-compose.yml`) usa Vite en modo `dev`. Para producción usá:
+
+```bash
+cp .env.prod.example .env.prod
+# Editar .env.prod: CORS_ORIGIN, DB_PASS, etc.
+
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+```
+
+Qué cambia respecto a desarrollo:
+
+| Capa | Desarrollo | Producción |
+|------|------------|------------|
+| Frontend | Vite HMR | Build estático servido por Nginx |
+| API | Bind-mount + debug | Imagen con código + `APP_DEBUG=0` |
+| Gateway | Proxy a Vite `:5173` | Proxy a frontend Nginx `:80` |
+
+Si ya tenías la BD levantada con el Compose de desarrollo, el volumen `carioca_app_db_data` se reutiliza. **`DB_PASS` debe coincidir con la clave actual de MariaDB** (si era `root`, dejala o recreá con `docker compose … down -v`).
+
+Detrás de reverse proxy HTTPS (Synology):
+
+```env
+CORS_ORIGIN=https://carioca.tudominio.com
+# SESSION_COOKIE_SECURE se activa solo si CORS_ORIGIN es https://
+```
+
+Actualizar código en el servidor:
+
+```bash
+# subir cambios y reconstruir imágenes
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+```
+
 ## Notas
 
-- `vendor/` y `node_modules/` viven en volúmenes Docker (mejor rendimiento en Windows).
+- `vendor/` y `node_modules/` viven en volúmenes Docker en **desarrollo** (mejor rendimiento en Windows).
 - El dump inicial está en `docker/db/init/01-carioca.sql`.
-- Variable de CORS: `CORS_ORIGIN=http://localhost:48080` (ya configurada en Compose).
+- Variable de CORS: `CORS_ORIGIN=http://localhost:48080` (ya configurada en Compose de desarrollo).

@@ -6,8 +6,10 @@ namespace App\Auth;
 
 final class SessionAuth
 {
-    public function __construct(private readonly string $sessionName)
-    {
+    public function __construct(
+        private readonly string $sessionName,
+        private readonly bool $secureCookie = false,
+    ) {
     }
 
     public function start(): void
@@ -22,6 +24,7 @@ final class SessionAuth
             'path' => '/',
             'httponly' => true,
             'samesite' => 'Lax',
+            'secure' => $this->secureCookie,
         ]);
         session_start();
     }

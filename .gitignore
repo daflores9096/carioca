@@ -8,9 +8,10 @@ Thumbs.db
 
 # Env / secrets
 .env
+.env.prod
 **/.env
-!.env.example
 !**/.env.example
+!**/.env.prod.example
 
 # PHP
 app/vendor/

@@ -28,7 +28,10 @@ return function (ContainerBuilder $builder): void {
         SessionAuth::class => function (ContainerInterface $c): SessionAuth {
             /** @var array $settings */
             $settings = $c->get('settings');
-            return new SessionAuth($settings['app']['session_name']);
+            return new SessionAuth(
+                $settings['app']['session_name'],
+                (bool) ($settings['app']['session_secure'] ?? false),
+            );
         },
 
         AuthService::class => function (ContainerInterface $c): AuthService {
