@@ -1,0 +1,58 @@
+:root {
+  --carioca-navy: #004374;
+  --carioca-accent: #f3ac6c;
+  --carioca-bg: #f4f6f9;
+}
+
+body {
+  background: var(--carioca-bg);
+  min-height: 100vh;
+}
+
+.bg-carioca {
+  background-color: var(--carioca-navy) !important;
+}
+
+.text-carioca {
+  color: var(--carioca-navy) !important;
+}
+
+.btn-carioca {
+  background-color: var(--carioca-navy);
+  border-color: var(--carioca-navy);
+  color: #fff;
+}
+
+.btn-carioca:hover,
+.btn-carioca:focus {
+  background-color: #003258;
+  border-color: #003258;
+  color: #fff;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top right, rgba(243, 172, 108, 0.25), transparent 40%),
+    linear-gradient(160deg, #e8eef5 0%, #f4f6f9 45%, #dce6f0 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border: 0;
+  box-shadow: 0 12px 40px rgba(0, 67, 116, 0.12);
+}
+
+.brand-banner {
+  background: var(--carioca-navy);
+  color: #fff;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
