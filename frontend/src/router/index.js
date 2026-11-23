@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
+import ForgotPasswordView from '../views/ForgotPasswordView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 import HomeView from '../views/HomeView.vue'
 import CuentaView from '../views/CuentaView.vue'
 import ItemsListView from '../views/items/ItemsListView.vue'
@@ -30,6 +32,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
+    { path: '/forgot-password', name: 'forgot-password', component: ForgotPasswordView, meta: { guest: true } },
+    { path: '/reset-password', name: 'reset-password', component: ResetPasswordView, meta: { guest: true } },
     { path: '/', name: 'home', component: HomeView, meta: { requiresAuth: true } },
     { path: '/cuenta', name: 'cuenta', component: CuentaView, meta: { requiresAuth: true } },
     { path: '/items', name: 'items', component: ItemsListView, meta: { requiresAuth: true } },

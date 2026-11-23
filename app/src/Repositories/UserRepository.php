@@ -27,6 +27,21 @@ final class UserRepository
         return $row === false ? null : $row;
     }
 
+    public function findByEmail(string $email): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT usuario_id, usuario_nombre, usuario_clave, usuario_clave_hash,
+                    usuario_email, nivel_acceso, usuario_freg
+             FROM usuarios
+             WHERE LOWER(usuario_email) = LOWER(:email)
+             LIMIT 1'
+        );
+        $stmt->execute(['email' => $email]);
+        $row = $stmt->fetch();
+
+        return $row === false ? null : $row;
+    }
+
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(

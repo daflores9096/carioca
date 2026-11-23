@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 const auth = useAuthStore()
@@ -9,6 +9,7 @@ const route = useRoute()
 
 const usuario = ref('')
 const clave = ref('')
+const showPassword = ref(false)
 const error = ref('')
 const loading = ref(false)
 
@@ -49,16 +50,30 @@ async function onSubmit() {
               required
             />
           </div>
-          <div class="mb-4">
+          <div class="mb-2">
             <label class="form-label" for="clave">Contraseña</label>
-            <input
-              id="clave"
-              v-model="clave"
-              type="password"
-              class="form-control form-control-lg"
-              autocomplete="current-password"
-              required
-            />
+            <div class="input-group input-group-lg">
+              <input
+                id="clave"
+                v-model="clave"
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                :aria-pressed="showPassword"
+                @click="showPassword = !showPassword"
+              >
+                <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mb-4 text-end">
+            <RouterLink to="/forgot-password" class="small">¿Olvidaste tu contraseña?</RouterLink>
           </div>
           <button class="btn btn-carioca btn-lg w-100" type="submit" :disabled="loading">
             <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>

@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Auth\PasswordHasher;
 use App\Auth\SessionAuth;
 use App\Infrastructure\Database\ConnectionFactory;
+use App\Infrastructure\Mail\SmtpMailer;
+use App\Repositories\PasswordResetRepository;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\BackupService;
@@ -25,6 +27,14 @@ return function (ContainerBuilder $builder): void {
 
         UserRepository::class => fn (ContainerInterface $c) => new UserRepository($c->get(PDO::class)),
 
+        PasswordResetRepository::class => fn (ContainerInterface $c) => new PasswordResetRepository($c->get(PDO::class)),
+
+        SmtpMailer::class => function (ContainerInterface $c): SmtpMailer {
+            /** @var array $settings */
+            $settings = $c->get('settings');
+            return new SmtpMailer($settings['mail']);
+        },
+
         SessionAuth::class => function (ContainerInterface $c): SessionAuth {
             /** @var array $settings */
             $settings = $c->get('settings');
@@ -35,10 +45,18 @@ return function (ContainerBuilder $builder): void {
         },
 
         AuthService::class => function (ContainerInterface $c): AuthService {
+            /** @var array $settings */
+            $settings = $c->get('settings');
             return new AuthService(
                 $c->get(UserRepository::class),
                 $c->get(PasswordHasher::class),
                 $c->get(SessionAuth::class),
+                $c->get(PasswordResetRepository::class),
+                $c->get(SmtpMailer::class),
+                [
+                    'debug' => (bool) ($settings['app']['debug'] ?? false),
+                    'public_url' => (string) ($settings['app']['public_url'] ?? ''),
+                ],
             );
         },
 

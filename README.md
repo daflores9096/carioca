@@ -53,6 +53,13 @@ Cuando `carioca-app-db` esté `healthy` y el resto en `Up`, abrí:
 
 Solo para local. No usar en producción.
 
+### Recuperar contraseña
+
+En el login: **¿Olvidaste tu contraseña?** → email del usuario → enlace válido 1 hora.
+
+- **Desarrollo** sin SMTP (`APP_DEBUG=1`): la API responde con `dev_reset_url` para probar el flujo.
+- **Producción**: configurá SMTP en `.env.prod` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_ENCRYPTION`, `MAIL_FROM`, `APP_URL`).
+
 ## URLs
 
 | Qué | URL |

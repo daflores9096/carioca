@@ -30,7 +30,16 @@ services:
       APP_ENV: development
       APP_DEBUG: "1"
       CORS_ORIGIN: http://localhost:48080
+      APP_URL: http://localhost:48080
       SESSION_NAME: CARIOCASESSID
+      # Opcional: sin SMTP, en debug la API devuelve el enlace en la respuesta
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_ENCRYPTION: ${SMTP_ENCRYPTION:-tls}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-CARIOCA}
     depends_on:
       db:
         condition: service_healthy

@@ -63,4 +63,34 @@ final class AuthController
             return JsonResponse::error($response, 'Error al cambiar contraseña.', 500);
         }
     }
+
+    public function forgotPassword(Request $request, Response $response): Response
+    {
+        try {
+            $data = $this->auth->requestPasswordReset((array) $request->getParsedBody());
+            return JsonResponse::write($response, $data);
+        } catch (\App\Support\HttpException $e) {
+            return JsonResponse::error($response, $e->getMessage(), $e->status());
+        } catch (RuntimeException $e) {
+            $status = $e->getCode() >= 400 && $e->getCode() < 600 ? (int) $e->getCode() : 400;
+            return JsonResponse::error($response, $e->getMessage(), $status);
+        } catch (Throwable $e) {
+            return JsonResponse::error($response, 'Error al solicitar recuperación.', 500);
+        }
+    }
+
+    public function resetPassword(Request $request, Response $response): Response
+    {
+        try {
+            $data = $this->auth->resetPassword((array) $request->getParsedBody());
+            return JsonResponse::write($response, $data);
+        } catch (\App\Support\HttpException $e) {
+            return JsonResponse::error($response, $e->getMessage(), $e->status());
+        } catch (RuntimeException $e) {
+            $status = $e->getCode() >= 400 && $e->getCode() < 600 ? (int) $e->getCode() : 400;
+            return JsonResponse::error($response, $e->getMessage(), $status);
+        } catch (Throwable $e) {
+            return JsonResponse::error($response, 'Error al restablecer contraseña.', 500);
+        }
+    }
 }

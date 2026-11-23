@@ -32,6 +32,8 @@ return function (App $app): void {
 
     $app->group('/api/auth', function (RouteCollectorProxy $group): void {
         $group->post('/login', [AuthController::class, 'login']);
+        $group->post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        $group->post('/reset-password', [AuthController::class, 'resetPassword']);
         $group->post('/logout', [AuthController::class, 'logout'])->add(AuthMiddleware::class);
         $group->get('/me', [AuthController::class, 'me'])->add(AuthMiddleware::class);
         $group->post('/password', [AuthController::class, 'changePassword'])->add(AuthMiddleware::class);
