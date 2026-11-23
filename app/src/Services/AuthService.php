@@ -156,10 +156,9 @@ final class AuthService
 
         $token = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $token);
-        $expiresAt = date('Y-m-d H:i:s', time() + 3600);
 
         $this->resets->deleteActiveForUser((int) $user['usuario_id']);
-        $this->resets->create((int) $user['usuario_id'], $tokenHash, $expiresAt);
+        $this->resets->create((int) $user['usuario_id'], $tokenHash, 3600);
 
         $resetUrl = rtrim((string) $this->appSettings['public_url'], '/')
             . '/reset-password?token=' . urlencode($token);
@@ -170,7 +169,8 @@ final class AuthService
             $nombre = (string) $user['usuario_nombre'];
             $body = "Hola {$nombre},\n\n"
                 . "Recibimos una solicitud para restablecer tu contraseña en CARIOCA.\n\n"
-                . "Abrí este enlace (válido por 1 hora):\n{$resetUrl}\n\n"
+                . "Abrí este enlace (válido por 1 hora):\n"
+                . "<{$resetUrl}>\n\n"
                 . "Si no solicitaste este cambio, ignorá este mensaje.\n";
             $this->mailer->send(
                 (string) $user['usuario_email'],
@@ -198,7 +198,8 @@ final class AuthService
      */
     public function resetPassword(array $input): array
     {
-        $token = trim((string) ($input['token'] ?? ''));
+        // Algunos clientes de correo parten el enlace y meten espacios/saltos en el token.
+        $token = preg_replace('/\s+/', '', trim((string) ($input['token'] ?? ''))) ?? '';
         $nueva = (string) ($input['usuario_clave'] ?? $input['clave_nueva'] ?? '');
         $conf = (string) ($input['usuario_clave_conf'] ?? $input['clave_nueva_conf'] ?? '');
 

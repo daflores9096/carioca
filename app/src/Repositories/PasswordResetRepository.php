@@ -46,17 +46,18 @@ final class PasswordResetRepository
         $stmt->execute(['uid' => $usuarioId]);
     }
 
-    public function create(int $usuarioId, string $tokenHash, string $expiresAt): void
+    public function create(int $usuarioId, string $tokenHash, int $ttlSeconds = 3600): void
     {
         $this->ensureSchema();
+        // Todo en UTC: evita desfase PHP (America/La_Paz) vs MariaDB (UTC en Docker).
+        $ttl = max(60, $ttlSeconds);
         $stmt = $this->pdo->prepare(
-            'INSERT INTO password_resets (usuario_id, token_hash, expires_at, created_at)
-             VALUES (:uid, :hash, :expires, NOW())'
+            "INSERT INTO password_resets (usuario_id, token_hash, expires_at, created_at)
+             VALUES (:uid, :hash, DATE_ADD(UTC_TIMESTAMP(), INTERVAL {$ttl} SECOND), UTC_TIMESTAMP())"
         );
         $stmt->execute([
             'uid' => $usuarioId,
             'hash' => $tokenHash,
-            'expires' => $expiresAt,
         ]);
     }
 
@@ -68,7 +69,7 @@ final class PasswordResetRepository
              FROM password_resets
              WHERE token_hash = :hash
                AND used_at IS NULL
-               AND expires_at > NOW()
+               AND expires_at > UTC_TIMESTAMP()
              LIMIT 1'
         );
         $stmt->execute(['hash' => $tokenHash]);
@@ -81,7 +82,7 @@ final class PasswordResetRepository
     {
         $this->ensureSchema();
         $stmt = $this->pdo->prepare(
-            'UPDATE password_resets SET used_at = NOW() WHERE id = :id'
+            'UPDATE password_resets SET used_at = UTC_TIMESTAMP() WHERE id = :id'
         );
         $stmt->execute(['id' => $id]);
     }

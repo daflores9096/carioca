@@ -6,7 +6,12 @@ import { api } from '../api/client'
 const route = useRoute()
 const router = useRouter()
 
-const token = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''))
+const token = computed(() => {
+  const raw = route.query.token
+  const value = typeof raw === 'string' ? raw : Array.isArray(raw) ? String(raw[0] ?? '') : ''
+  // Gmail u otros pueden partir el enlace e insertar espacios/saltos en el token
+  return value.replace(/\s+/g, '')
+})
 const clave = ref('')
 const claveConf = ref('')
 const showPassword = ref(false)
