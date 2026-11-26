@@ -32,7 +32,13 @@ const showItems = ref(false)
 const total = computed(() => lines.value.reduce((s, l) => s + Number(l.importe_fac || 0), 0))
 const totBul = computed(() => lines.value.reduce((s, l) => s + Number(l.bultos || 0), 0))
 
+function normalizeCant(line) {
+  const n = Number(line.cant_fac)
+  line.cant_fac = Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0
+}
+
 function recalc(line) {
+  normalizeCant(line)
   const caja = Number(line.caja_item) || 0
   const cant = Number(line.cant_fac) || 0
   const precio = Number(line.precio_uni) || 0
@@ -41,17 +47,17 @@ function recalc(line) {
 }
 
 function addItem(item) {
-  const precioRef = Number(item.precio_item) || 0
-  const precio = Math.round(precioRef * 1.4 * 100) / 100
+  // P.V. = precio_item (igual que la pantalla antigua). No usar * 1.4 (eso era solo P.C. informativo).
+  const precio = Math.round((Number(item.precio_item) || 0) * 100) / 100
   const line = {
     cod_item: item.cod_item,
     nom_item: item.nom_item,
     unid_item: item.unid_item,
     caja_item: Number(item.caja_item) || 0,
     bultos: 0,
-    cant_fac: 1,
+    cant_fac: 0,
     precio_uni: precio,
-    importe_fac: precio,
+    importe_fac: 0,
   }
   recalc(line)
   lines.value.push(line)
@@ -206,6 +212,7 @@ watch(
               <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th class="text-end">C.CAJA</th>
                 <th class="text-end">Bultos</th>
                 <th class="text-end">Cant.</th>
                 <th class="text-end">P.V.</th>
@@ -215,13 +222,25 @@ watch(
             </thead>
             <tbody>
               <tr v-if="lines.length === 0">
-                <td colspan="7" class="text-center text-secondary py-3">Sin líneas</td>
+                <td colspan="8" class="text-center text-secondary py-3">Sin líneas</td>
               </tr>
               <tr v-for="(line, idx) in lines" :key="idx">
                 <td><code>{{ line.cod_item }}</code></td>
                 <td>{{ line.nom_item }}</td>
+                <td class="text-end" style="width:6rem">{{ Number(line.caja_item || 0).toFixed(2) }}</td>
                 <td style="width:7rem"><input v-model.number="line.bultos" type="number" step="0.01" class="form-control form-control-sm text-end" /></td>
-                <td style="width:7rem"><input v-model.number="line.cant_fac" type="number" step="0.01" class="form-control form-control-sm text-end" @input="recalc(line)" /></td>
+                <td style="width:7rem">
+                  <input
+                    v-model.number="line.cant_fac"
+                    type="number"
+                    step="1"
+                    min="0"
+                    inputmode="numeric"
+                    class="form-control form-control-sm text-end"
+                    @input="recalc(line)"
+                    @change="recalc(line)"
+                  />
+                </td>
                 <td style="width:7rem"><input v-model.number="line.precio_uni" type="number" step="0.01" class="form-control form-control-sm text-end" @input="recalc(line)" /></td>
                 <td class="text-end">{{ Number(line.importe_fac).toFixed(2) }}</td>
                 <td class="text-end"><button class="btn btn-sm btn-outline-danger" type="button" @click="removeLine(idx)">Quitar</button></td>
@@ -229,7 +248,7 @@ watch(
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="2" class="text-end fw-semibold">Totales</td>
+                <td colspan="3" class="text-end fw-semibold">Totales</td>
                 <td class="text-end fw-semibold">{{ totBul.toFixed(2) }}</td>
                 <td></td>
                 <td></td>
@@ -262,7 +281,7 @@ watch(
       title="Buscar artículo"
       endpoint="/api/items"
       placeholder="Código o nombre…"
-      :per-page="50"
+      :per-page="100"
       :columns="[{ key: 'cod_item', label: 'Código' }, { key: 'nom_item', label: 'Nombre' }, { key: 'existencia', label: 'Stock' }, { key: 'precio_item', label: 'Precio' }]"
       @close="showItems = false"
       @select="addItem"

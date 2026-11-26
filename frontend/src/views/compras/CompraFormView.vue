@@ -29,7 +29,13 @@ const showItems = ref(false)
 
 const total = computed(() => lines.value.reduce((s, l) => s + Number(l.importe_fac || 0), 0))
 
+function normalizeCant(line) {
+  const n = Number(line.cant_fac)
+  line.cant_fac = Number.isFinite(n) ? Math.max(0, Math.round(n)) : 0
+}
+
 function recalc(line) {
+  normalizeCant(line)
   const cant = Number(line.cant_fac) || 0
   const costo = Number(line.precio_uni) || 0
   line.precio_ven = Math.round(costo * 1.4 * 100) / 100
@@ -41,8 +47,8 @@ function addItem(item) {
   const line = {
     cod_item: item.cod_item,
     nom_item: item.nom_item,
-    unid_item: item.unid_item,
-    cant_fac: 1,
+    unid_item: item.unid_item || '',
+    cant_fac: 0,
     precio_uni: costo,
     precio_ven: Math.round(costo * 1.4 * 100) / 100,
     importe_fac: 0,
@@ -184,8 +190,9 @@ watch(
               <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Unidad</th>
                 <th class="text-end">Cant.</th>
-                <th class="text-end">Costo</th>
+                <th class="text-end">P.Costo</th>
                 <th class="text-end">P.Venta</th>
                 <th class="text-end">Importe</th>
                 <th></th>
@@ -193,12 +200,24 @@ watch(
             </thead>
             <tbody>
               <tr v-if="lines.length === 0">
-                <td colspan="7" class="text-center text-secondary py-3">Sin líneas</td>
+                <td colspan="8" class="text-center text-secondary py-3">Sin líneas</td>
               </tr>
               <tr v-for="(line, idx) in lines" :key="idx">
                 <td><code>{{ line.cod_item }}</code></td>
                 <td>{{ line.nom_item }}</td>
-                <td style="width:7rem"><input v-model.number="line.cant_fac" type="number" step="0.01" class="form-control form-control-sm text-end" @input="recalc(line)" /></td>
+                <td>{{ line.unid_item || '—' }}</td>
+                <td style="width:7rem">
+                  <input
+                    v-model.number="line.cant_fac"
+                    type="number"
+                    step="1"
+                    min="0"
+                    inputmode="numeric"
+                    class="form-control form-control-sm text-end"
+                    @input="recalc(line)"
+                    @change="recalc(line)"
+                  />
+                </td>
                 <td style="width:7rem"><input v-model.number="line.precio_uni" type="number" step="0.01" class="form-control form-control-sm text-end" @input="recalc(line)" /></td>
                 <td class="text-end">{{ Number(line.precio_ven).toFixed(2) }}</td>
                 <td class="text-end">{{ Number(line.importe_fac).toFixed(2) }}</td>
@@ -207,7 +226,7 @@ watch(
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="5" class="text-end fw-semibold">Total</td>
+                <td colspan="6" class="text-end fw-semibold">Total</td>
                 <td class="text-end fw-semibold">{{ total.toFixed(2) }}</td>
                 <td></td>
               </tr>
@@ -237,7 +256,7 @@ watch(
       title="Buscar artículo"
       endpoint="/api/items"
       placeholder="Código o nombre…"
-      :per-page="50"
+      :per-page="100"
       :columns="[{ key: 'cod_item', label: 'Código' }, { key: 'nom_item', label: 'Nombre' }, { key: 'precio_item', label: 'Precio' }]"
       @close="showItems = false"
       @select="addItem"

@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader.vue'
 import DataToolbar from '../../components/DataToolbar.vue'
 import PaginationBar from '../../components/PaginationBar.vue'
 import ListPanel from '../../components/ListPanel.vue'
+import { sortIconClass, sortThClass } from '../../utils/sortUi'
 
 const { auth, logout } = useAuthLayout()
 const router = useRouter()
@@ -88,11 +89,19 @@ onMounted(load)
     <ListPanel :loading="loading" :empty="rows.length === 0" :col-span="6">
       <template #head>
         <tr>
-          <th role="button" @click="toggleSort('cod_item')">Código</th>
-          <th role="button" @click="toggleSort('nom_item')">Nombre</th>
+          <th :class="sortThClass(sort, 'cod_item')" role="button" @click="toggleSort('cod_item')">
+            <span class="sort-th-inner">Código <i :class="sortIconClass(sort, dir, 'cod_item')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'nom_item')" role="button" @click="toggleSort('nom_item')">
+            <span class="sort-th-inner">Nombre <i :class="sortIconClass(sort, dir, 'nom_item')" aria-hidden="true"></i></span>
+          </th>
           <th>Unidad</th>
-          <th role="button" class="text-end" @click="toggleSort('precio_item')">Precio</th>
-          <th role="button" class="text-end" @click="toggleSort('existencia')">Existencia</th>
+          <th :class="sortThClass(sort, 'precio_item', 'end')" role="button" @click="toggleSort('precio_item')">
+            <span class="sort-th-inner">Precio <i :class="sortIconClass(sort, dir, 'precio_item')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'existencia', 'end')" role="button" @click="toggleSort('existencia')">
+            <span class="sort-th-inner">Existencia <i :class="sortIconClass(sort, dir, 'existencia')" aria-hidden="true"></i></span>
+          </th>
           <th></th>
         </tr>
       </template>

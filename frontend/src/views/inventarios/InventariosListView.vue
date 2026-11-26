@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader.vue'
 import DataToolbar from '../../components/DataToolbar.vue'
 import PaginationBar from '../../components/PaginationBar.vue'
 import ListPanel from '../../components/ListPanel.vue'
+import { sortIconClass, sortThClass } from '../../utils/sortUi'
 
 const { logout } = useAuthLayout()
 const router = useRouter()
@@ -81,11 +82,21 @@ onMounted(load)
     <ListPanel :loading="loading" :empty="rows.length === 0" :col-span="6">
       <template #head>
         <tr>
-          <th role="button" @click="toggleSort('id_inv')">N°</th>
-          <th role="button" @click="toggleSort('fecha_lev')">Fecha lev.</th>
-          <th role="button" @click="toggleSort('descripcion')">Descripción</th>
-          <th role="button" @click="toggleSort('estado')">Estado</th>
-          <th role="button" @click="toggleSort('fecha_ap')">Fecha apl.</th>
+          <th :class="sortThClass(sort, 'id_inv')" role="button" @click="toggleSort('id_inv')">
+            <span class="sort-th-inner">N° <i :class="sortIconClass(sort, dir, 'id_inv')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'fecha_lev')" role="button" @click="toggleSort('fecha_lev')">
+            <span class="sort-th-inner">Fecha lev. <i :class="sortIconClass(sort, dir, 'fecha_lev')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'descripcion')" role="button" @click="toggleSort('descripcion')">
+            <span class="sort-th-inner">Descripción <i :class="sortIconClass(sort, dir, 'descripcion')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'estado')" role="button" @click="toggleSort('estado')">
+            <span class="sort-th-inner">Estado <i :class="sortIconClass(sort, dir, 'estado')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'fecha_ap')" role="button" @click="toggleSort('fecha_ap')">
+            <span class="sort-th-inner">Fecha apl. <i :class="sortIconClass(sort, dir, 'fecha_ap')" aria-hidden="true"></i></span>
+          </th>
           <th></th>
         </tr>
       </template>

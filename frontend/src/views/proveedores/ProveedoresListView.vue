@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader.vue'
 import DataToolbar from '../../components/DataToolbar.vue'
 import PaginationBar from '../../components/PaginationBar.vue'
 import ListPanel from '../../components/ListPanel.vue'
+import { sortIconClass, sortThClass } from '../../utils/sortUi'
 
 const { logout } = useAuthLayout()
 const router = useRouter()
@@ -78,9 +79,15 @@ onMounted(load)
     <ListPanel :loading="loading" :empty="rows.length === 0" :col-span="5">
       <template #head>
         <tr>
-          <th role="button" @click="toggleSort('cod_pro')">Código</th>
-          <th role="button" @click="toggleSort('nom_pro')">Nombre</th>
-          <th role="button" @click="toggleSort('ciudad_pro')">Ciudad</th>
+          <th :class="sortThClass(sort, 'cod_pro')" role="button" @click="toggleSort('cod_pro')">
+            <span class="sort-th-inner">Código <i :class="sortIconClass(sort, dir, 'cod_pro')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'nom_pro')" role="button" @click="toggleSort('nom_pro')">
+            <span class="sort-th-inner">Nombre <i :class="sortIconClass(sort, dir, 'nom_pro')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'ciudad_pro')" role="button" @click="toggleSort('ciudad_pro')">
+            <span class="sort-th-inner">Ciudad <i :class="sortIconClass(sort, dir, 'ciudad_pro')" aria-hidden="true"></i></span>
+          </th>
           <th>Teléfono</th>
           <th></th>
         </tr>

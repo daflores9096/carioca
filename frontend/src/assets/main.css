@@ -56,3 +56,35 @@ body {
   font-weight: 700;
   letter-spacing: 0.04em;
 }
+
+.sort-th {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sort-th .sort-th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sort-th.text-end .sort-th-inner {
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.sort-th .sort-th-icon {
+  font-size: 0.85rem;
+  color: var(--carioca-navy);
+  opacity: 0.55;
+  line-height: 1;
+}
+
+.sort-th:hover .sort-th-icon,
+.sort-th-active .sort-th-icon {
+  opacity: 1;
+}
+
+.sort-th-active {
+  color: var(--carioca-navy);
+}

@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader.vue'
 import DataToolbar from '../../components/DataToolbar.vue'
 import PaginationBar from '../../components/PaginationBar.vue'
 import ListPanel from '../../components/ListPanel.vue'
+import { sortIconClass, sortThClass } from '../../utils/sortUi'
 
 const { auth, logout } = useAuthLayout()
 const router = useRouter()
@@ -78,10 +79,18 @@ onMounted(load)
     <ListPanel :loading="loading" :empty="rows.length === 0" :col-span="5">
       <template #head>
         <tr>
-          <th role="button" @click="toggleSort('cod_fac')">N°</th>
-          <th role="button" @click="toggleSort('fecha_fac')">Fecha</th>
-          <th role="button" @click="toggleSort('nom_cli')">Cliente</th>
-          <th role="button" class="text-end" @click="toggleSort('total_fac')">Total</th>
+          <th :class="sortThClass(sort, 'cod_fac')" role="button" @click="toggleSort('cod_fac')">
+            <span class="sort-th-inner">N° <i :class="sortIconClass(sort, dir, 'cod_fac')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'fecha_fac')" role="button" @click="toggleSort('fecha_fac')">
+            <span class="sort-th-inner">Fecha <i :class="sortIconClass(sort, dir, 'fecha_fac')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'nom_cli')" role="button" @click="toggleSort('nom_cli')">
+            <span class="sort-th-inner">Cliente <i :class="sortIconClass(sort, dir, 'nom_cli')" aria-hidden="true"></i></span>
+          </th>
+          <th :class="sortThClass(sort, 'total_fac', 'end')" role="button" @click="toggleSort('total_fac')">
+            <span class="sort-th-inner">Total <i :class="sortIconClass(sort, dir, 'total_fac')" aria-hidden="true"></i></span>
+          </th>
           <th></th>
         </tr>
       </template>

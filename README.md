@@ -140,7 +140,31 @@ Qué cambia respecto a desarrollo:
 
 Si ya tenías la BD levantada con el Compose de desarrollo, el volumen `carioca_app_db_data` se reutiliza. **`DB_PASS` debe coincidir con la clave actual de MariaDB** (si era `root`, dejala o recreá con `docker compose … down -v`).
 
-Detrás de reverse proxy HTTPS (Synology):
+### HTTPS con Tailscale (igual que book-readings)
+
+`book-readings` suele ocupar el **443** de `https://dflores.….ts.net`. Carioca puede ir en paralelo en otro puerto HTTPS de Tailscale (sin tocar el otro proyecto):
+
+```bash
+# Ver qué hay montado hoy
+sudo tailscale serve status
+
+# Exponer Carioca (Docker en :48080) con HTTPS de Tailscale en :8443
+sudo tailscale serve --bg --https=8443 http://127.0.0.1:48080
+```
+
+En `.env.prod`:
+
+```env
+CORS_ORIGIN=https://dflores.tail134d69.ts.net:8443
+APP_URL=https://dflores.tail134d69.ts.net:8443
+```
+
+Luego `docker compose -f docker-compose.prod.yml --env-file .env.prod up -d`.
+
+App: `https://dflores.tail134d69.ts.net:8443`  
+(Si usás **Funnel** para acceso fuera de la cola Tailscale, el comando equivalente es `sudo tailscale funnel --bg --https=8443 http://127.0.0.1:48080`.)
+
+Detrás de reverse proxy HTTPS (Synology / dominio propio):
 
 ```env
 CORS_ORIGIN=https://carioca.tudominio.com

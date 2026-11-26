@@ -184,6 +184,7 @@ onMounted(load)
       title="Agregar artículo al conteo"
       endpoint="/api/items"
       placeholder="Código o nombre…"
+      :per-page="100"
       :columns="[
         { key: 'cod_item', label: 'Código' },
         { key: 'nom_item', label: 'Nombre' },
